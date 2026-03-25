@@ -1,0 +1,173 @@
+/* ===== Global Styles ===== */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding-top: 20px;
+    padding-bottom: 40px;
+}
+
+.container {
+    max-width: 1200px;
+}
+
+/* ===== Navbar Customization ===== */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+.navbar-dark .navbar-nav .nav-link {
+    color: rgba(255,255,255,0.85);
+    transition: color 0.2s ease;
+}
+.navbar-dark .navbar-nav .nav-link:hover {
+    color: #fff;
+}
+.navbar-dark .navbar-nav .active > .nav-link {
+    font-weight: 500;
+    border-bottom: 2px solid #ffc107;
+}
+
+/* ===== Cards (for car listings) ===== */
+.card {
+    border: none;
+    border-radius: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+.card-title {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+.card-text {
+    color: #5a6c7e;
+    margin-bottom: 1.2rem;
+}
+.card-text strong {
+    color: #2c3e50;
+}
+
+/* ===== Buttons ===== */
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 30px;
+    transition: background-color 0.2s, transform 0.1s;
+}
+.btn-primary:hover {
+    background-color: #0056b3;
+    transform: scale(1.02);
+}
+.btn-warning {
+    border-radius: 20px;
+    padding: 5px 15px;
+}
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+/* ===== Form Elements ===== */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    padding: 10px 12px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-control:focus, .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+}
+
+/* ===== Alerts ===== */
+.alert {
+    border-radius: 10px;
+    border: none;
+    padding: 12px 20px;
+    margin-bottom: 20px;
+}
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+/* ===== Tables (for bookings) ===== */
+.table {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.table thead th {
+    background-color: #f1f3f5;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    color: #2c3e50;
+}
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* ===== Jumbotron / Welcome Section ===== */
+.jumbotron {
+    background-color: #e9ecef;
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+.jumbotron h1 {
+    font-size: 2.5rem;
+    color: #2c3e50;
+}
+.jumbotron .lead {
+    font-size: 1.25rem;
+    color: #5a6c7e;
+    margin-bottom: 1.5rem;
+}
+
+/* ===== Footer (optional) ===== */
+footer {
+    margin-top: 3rem;
+    text-align: center;
+    color: #6c757d;
+    border-top: 1px solid #dee2e6;
+    padding-top: 1.5rem;
+}
+
+/* ===== Responsive Adjustments ===== */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 20px;
+    }
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+    .jumbotron {
+        padding: 2rem 1rem;
+    }
+    .jumbotron h1 {
+        font-size: 1.8rem;
+    }
+}
