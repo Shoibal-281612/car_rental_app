@@ -2,19 +2,16 @@
 class SessionHandlerDB implements SessionHandlerInterface {
     private $conn;
 
-    #[\ReturnTypeWillChange]
-    public function open($savePath, $sessionName) {
+    public function open($savePath, $sessionName): bool {
         $this->conn = getDbConnection();
         return true;
     }
 
-    #[\ReturnTypeWillChange]
-    public function close() {
+    public function close(): bool {
         return true;
     }
 
-    #[\ReturnTypeWillChange]
-    public function read($id) {
+    public function read($id): string|false {
         $stmt = $this->conn->prepare("SELECT session_data FROM sessions WHERE session_id = ?");
         $stmt->bind_param("s", $id);
         $stmt->execute();
@@ -25,25 +22,24 @@ class SessionHandlerDB implements SessionHandlerInterface {
         return '';
     }
 
-    #[\ReturnTypeWillChange]
-    public function write($id, $data) {
+    public function write($id, $data): bool {
         $stmt = $this->conn->prepare("REPLACE INTO sessions (session_id, session_data, last_accessed) VALUES (?, ?, NOW())");
         $stmt->bind_param("ss", $id, $data);
         return $stmt->execute();
     }
 
-    #[\ReturnTypeWillChange]
-    public function destroy($id) {
+    public function destroy($id): bool {
         $stmt = $this->conn->prepare("DELETE FROM sessions WHERE session_id = ?");
         $stmt->bind_param("s", $id);
         return $stmt->execute();
     }
 
-    #[\ReturnTypeWillChange]
-    public function gc($maxlifetime) {
+    public function gc($maxlifetime): int|false {
         $old = time() - $maxlifetime;
         $stmt = $this->conn->prepare("DELETE FROM sessions WHERE last_accessed < FROM_UNIXTIME(?)");
         $stmt->bind_param("i", $old);
-        return $stmt->execute();
+        $stmt->execute();
+        return $stmt->affected_rows;
     }
 }
+?>
