@@ -1,59 +1,79 @@
 <?php
-require_once '/../config/config.php';
-require_once '/../includes/auth.php';
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../includes/auth.php';
 requireAgency();
 
-$error = '';
-$success = '';
+$agency_id = $_SESSION['user_id'];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $model = sanitize($_POST['model']);
-    $number = sanitize($_POST['vehicle_number']);
-    $seats = (int)$_POST['seating_capacity'];
-    $rent = (float)$_POST['rent_per_day'];
+// Fetch all cars of this agency
+$stmt = $conn->prepare("SELECT * FROM cars WHERE agency_id = ? ORDER BY id DESC");
+$stmt->bind_param("i", $agency_id);
+$stmt->execute();
+$cars = $stmt->get_result();
+$stmt->close();
 
-    if (empty($model) || empty($number) || $seats <= 0 || $rent <= 0) {
-        $error = 'All fields are required and must be valid.';
-    } else {
-        $agency_id = $_SESSION['user_id'];
-        $stmt = $conn->prepare("INSERT INTO cars (agency_id, vehicle_model, vehicle_number, seating_capacity, rent_per_day) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("issid", $agency_id, $model, $number, $seats, $rent);
-        if ($stmt->execute()) {
-            $success = 'Car added successfully!';
-        } else {
-            $error = 'Error: ' . $stmt->error;
-        }
-        $stmt->close();
-    }
-}
-
-include '../includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
-<h2>Add New Car</h2>
-<?php if ($error): ?>
-    <div class="alert alert-danger"><?php echo $error; ?></div>
+
+<h2>My Cars & Bookings</h2>
+
+<?php if ($cars->num_rows == 0): ?>
+    <div class="alert alert-info">You haven't added any cars yet. <a href="add_car.php">Add one now</a>.</div>
+<?php else: ?>
+    <?php while ($car = $cars->fetch_assoc()): ?>
+        <div class="card mb-4">
+            <div class="card-header">
+                <strong><?php echo htmlspecialchars($car['vehicle_model']); ?></strong> 
+                (<?php echo htmlspecialchars($car['vehicle_number']); ?>) - $<?php echo number_format($car['rent_per_day'], 2); ?>/day
+            </div>
+            <div class="card-body">
+                <h5>Bookings</h5>
+                <?php
+                // Fetch bookings for this car
+                $stmt2 = $conn->prepare("
+                    SELECT b.*, u.name AS customer_name, u.email AS customer_email
+                    FROM bookings b
+                    JOIN users u ON b.customer_id = u.id
+                    WHERE b.car_id = ? AND b.status = 'active'
+                    ORDER BY b.start_date DESC
+                ");
+                $stmt2->bind_param("i", $car['id']);
+                $stmt2->execute();
+                $bookings = $stmt2->get_result();
+                $stmt2->close();
+
+                if ($bookings->num_rows == 0):
+                ?>
+                    <p class="text-muted">No bookings yet.</p>
+                <?php else: ?>
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Email</th>
+                                <th>Start Date</th>
+                                <th>Days</th>
+                                <th>Total Cost</th>
+                                <th>Booking Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php while ($booking = $bookings->fetch_assoc()): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($booking['customer_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($booking['customer_email']); ?></td>
+                                    <td><?php echo $booking['start_date']; ?></td>
+                                    <td><?php echo $booking['days']; ?></td>
+                                    <td>$<?php echo number_format($booking['total_cost'], 2); ?></td>
+                                    <td><?php echo $booking['booking_date']; ?></td>
+                                </tr>
+                            <?php endwhile; ?>
+                        </tbody>
+                    </table>
+                <?php endif; ?>
+            </div>
+        </div>
+    <?php endwhile; ?>
 <?php endif; ?>
-<?php if ($success): ?>
-    <div class="alert alert-success"><?php echo $success; ?></div>
-<?php endif; ?>
-<form method="POST">
-    <div class="mb-3">
-        <label for="model" class="form-label">Vehicle Model</label>
-        <input type="text" class="form-control" id="model" name="model" required>
-    </div>
-    <div class="mb-3">
-        <label for="vehicle_number" class="form-label">Vehicle Number</label>
-        <input type="text" class="form-control" id="vehicle_number" name="vehicle_number" required>
-    </div>
-    <div class="mb-3">
-        <label for="seating_capacity" class="form-label">Seating Capacity</label>
-        <input type="number" class="form-control" id="seating_capacity" name="seating_capacity" min="1" required>
-    </div>
-    <div class="mb-3">
-        <label for="rent_per_day" class="form-label">Rent per Day ($)</label>
-        <input type="number" step="0.01" class="form-control" id="rent_per_day" name="rent_per_day" min="0" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Add Car</button>
-    <a href="../cars.php" class="btn btn-secondary">Cancel</a>
-</form>
-<?php include '../includes/footer.php'; ?>
+
+<?php include __DIR__ . '/../includes/footer.php'; ?>
