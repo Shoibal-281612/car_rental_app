@@ -1,4 +1,6 @@
 <?php
+ob_start(); // Prevent headers already sent errors
+
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
@@ -9,7 +11,6 @@ $pass = getenv('DB_PASS') ?: 'SdCYuYvIoBsekhSuwCXEmvgPXeQagUCA';
 $name = getenv('DB_NAME') ?: 'railway';
 
 $conn = new mysqli($host, $user, $pass, $name, $port);
-// Railway requires SSL; this allows any certificate
 $conn->ssl_set(NULL, NULL, NULL, NULL, NULL);
 
 if ($conn->connect_error) {
